@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}ADMARKET — реклама без хаоса{% endblock %}
+{% block content %}
+<section class="hero hero-layout">
+ <div class="hero-copy">
+  <div class="eyebrow"><span class="eyebrow-pulse"></span> ADVERTISING OPERATING SYSTEM</div>
+  <h1>Реклама, которая<br><span>работает на рост.</span></h1>
+  <p class="lead">Находи площадки, собирай медиапланы и управляй размещениями в едином пространстве. От первого брифа до результата.</p>
+  <a class="button" href="#ai-buyer">Запустить подбор <b>↗</b></a>
+  <div class="hero-proof"><span><i>✓</i> Единый каталог</span><span><i>✓</i> AI-подбор</span><span><i>✓</i> Контроль сделок</span></div><div class="hero-note"><span class="dot"></span> Демонстрационная среда · реальные платежи отключены</div>
+ </div>
+ <aside class="hero-preview" aria-label="Обзор возможностей ADMARKET">
+  <div class="preview-top"><span class="preview-mark">AD<span>M</span></span><span class="preview-status"><i></i> SYSTEM READY</span></div>
+  <div class="preview-kicker">WORKSPACE / OVERVIEW</div><div class="preview-title">План кампании</div>
+  <div class="preview-subtitle">Предварительный медиаплан · пример</div>
+  <div class="preview-metrics"><div><small>Бюджет</small><strong>150 000 ₽</strong></div><div><small>Каналы</small><strong>03</strong></div><div><small>Подбор</small><strong>AI</strong></div></div>
+  <div class="preview-bars"><div><span>Социальные сети</span><b>52%</b><i><em style="width:52%"></em></i></div><div><span>Медиа</span><b>31%</b><i><em style="width:31%"></em></i></div><div><span>Другие каналы</span><b>17%</b><i><em style="width:17%"></em></i></div></div>
+  <div class="preview-foot"><span>01</span> Бриф <span class="preview-line"></span><span>02</span> Подбор <span class="preview-line"></span><span>03</span> Контроль</div>
+  <p class="preview-disclaimer">Иллюстративный пример интерфейса. Не реальные данные.</p>
+ </aside>
+</section>
+{% if request.query_params.get('sent') %}
+<div class="notice">Заявка принята. Команда ADMARKET свяжется с вами после подключения контактов.</div>
+{% endif %}
+
+<section class="section" id="ai-buyer">
+ <div class="section-head"><div><div class="eyebrow">01 — INTELLIGENCE</div><h2>Твой рекламный<br>стратег.</h2></div><p>Ассистент собирает бриф, уточняет задачу и помогает составить медиаплан из каталога.</p></div>
+ <div class="ai-panel">
+  <div class="ai-heading"><div class="ai-orb">✳</div><div><strong>ADMARKET AI</strong><small>Медиабайер · демонстрационный режим или подключённый API</small></div><span class="online">● READY</span></div>
+  <div class="chat-log" id="chat-log"><div class="bubble bot">Привет! Я медиабайер ADMARKET. Расскажи, что за бизнес или продукт хочешь продвигать. Я помогу собрать бриф и медиаплан.</div></div>
+  <form id="ai-form" class="chat-form"><textarea id="ai-message" rows="2" placeholder="Например: хочу продвигать ремонт квартир в Омске, бюджет 30 000 ₽..." required></textarea><button class="button" type="submit" id="ai-send">Отправить ↗</button></form>
+  <p class="ai-footnote">Не отправляй пароли и платёжные данные. AI опирается на каталог ADMARKET. Все стартовые предложения демонстрационные.</p>
+ </div>
+</section>
+
+
+<section class="section" id="planner">
+ <div class="section-head"><div><div class="eyebrow">02 — PLANNING</div><h2>Собрать медиаплан.</h2></div><p>Заполни бриф вручную — система распределит бюджет между подходящими записями каталога.</p></div>
+ <form id="plan-form" class="matcher">
+  <div class="form-grid">
+   <label>Бизнес / продукт<input name="business" required placeholder="Например: ремонт квартир"></label>
+   <label>Цель рекламы<input name="goal" required placeholder="Заявки, продажи, узнаваемость"></label>
+   <label>Целевая аудитория<input name="audience" placeholder="Например: владельцы квартир 25–45"></label>
+  </div>
+  <div class="form-grid">
+   <label>География<select name="geo"><option>Россия</option><option>Омск</option><option>Сибирь</option></select></label>
+   <label>Общий бюджет, ₽<input name="budget" type="number" min="1000" value="30000" required></label>
+   <label>Каналы<select name="channels" multiple><option>VK</option><option>MAX</option><option>Сайт / медиа</option><option>Email</option><option>Подкаст</option></select><small>Можно выбрать несколько каналов.</small></label>
+  </div>
+  <button class="button" type="submit">Сформировать медиаплан <b>→</b></button>
+ </form><div id="plan-result"></div>
+</section>
+
+<section class="section" id="matcher">
+ <div class="section-head"><div><div class="eyebrow">03 — DISCOVERY</div><h2>Что продвигаем?</h2></div><p>Заполни вводные — система предложит подходящие варианты из каталога.</p></div>
+ <form class="matcher" action="/recommend" method="post">
+  <label>Продукт или цель<textarea name="goal" required placeholder="Например: продать квартиры в новостройке, привлечь заявки на ремонт..." rows="2"></textarea></label>
+  <div class="form-grid">
+   <label>География<select name="geo"><option>Россия</option><option>Омск</option><option>Сибирь</option></select></label>
+   <label>Бюджет на размещение, ₽<input name="budget" type="number" min="1000" value="30000" required></label>
+   <label>Канал<select name="channel"><option value="">Любой канал</option>{% for c in channels %}<option>{{c}}</option>{% endfor %}</select></label>
+  </div>
+  <button class="button" type="submit">Подобрать площадки <b>→</b></button>
+ </form>
+</section>
+<section class="section" id="catalog">
+ <div class="section-head"><div><div class="eyebrow">04 — MARKETPLACE</div><h2>Каталог площадок</h2></div><p>{{ inventory|length }} демонстрационных предложений</p></div>
+ <div class="filters marketplace-filters"><input id="search" placeholder="Поиск по площадке или тематике"><select id="channel"><option value="">Все каналы</option>{% for c in channels %}<option>{{c}}</option>{% endfor %}</select><select id="geo"><option value="">Вся география</option><option>Омск</option><option>Сибирь</option><option>Россия</option></select><input id="max-price" type="number" min="0" placeholder="Цена до, ₽"><input id="min-audience" type="number" min="0" placeholder="Аудитория от"><select id="sort"><option value="recommended">Сначала подходящие</option><option value="price-asc">Сначала дешевле</option><option value="price-desc">Сначала дороже</option><option value="audience-desc">Больше аудитория</option></select></div>
+ <div class="catalog-toolbar"><span id="catalog-count">{{ inventory|length }} площадок</span><span>Можно выбрать до 3 вариантов для сравнения</span></div>
+ <div class="cards" id="cards">
+ {% for x in inventory %}
+ <article class="card" data-channel="{{x.channel}}" data-geo="{{x.geo}}" data-price="{{x.price}}" data-audience="{{x.audience}}" data-name="{{x.name}}" data-topic="{{x.topic}}" data-formats="{{x.formats}}" data-search="{{(x.name ~ ' ' ~ x.topic)|lower}}">
+  <div class="card-top"><span class="tag">{{x.channel}}</span><span class="demo">DEMO</span></div>
+  <h3>{{x.name}}</h3><p class="muted">{{x.topic}} · {{x.geo}}</p>
+  <div class="stats"><div><strong>{{"{:,}".format(x.audience).replace(",", " ")}}</strong><small>аудитория</small></div><div><strong>{{"{:,}".format(x.price).replace(",", " ")}} ₽</strong><small>тестовая цена</small></div></div>
+  <div class="formats">{{x.formats}}</div>
+  <p class="disclaimer">{{x.notes}}</p><button class="compare-toggle" type="button" aria-pressed="false">＋ Сравнить</button>
+ </article>
+ {% endfor %}
+ </div><div id="compare-panel" class="compare-panel" hidden></div>
+</section>
+<section class="section split">
+ <div><div class="eyebrow">05 / ПРОЗРАЧНАЯ МОДЕЛЬ</div><h2>От запроса<br>до размещения.</h2></div>
+ <div class="steps"><div><b>01</b><span><strong>Бриф</strong><small>Цель, аудитория, география и бюджет.</small></span></div><div><b>02</b><span><strong>Подбор</strong><small>Сравнение площадок из проверяемого каталога.</small></span></div><div><b>03</b><span><strong>Согласование</strong><small>Заявка уходит менеджеру. Оплата пока вручную.</small></span></div></div>
+</section>
+{% endblock %}
+{% block extra %}{% endblock %}

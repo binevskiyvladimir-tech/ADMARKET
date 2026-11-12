@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: admarket-ai-media-buyer
+    runtime: docker
+    plan: starter
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /
+    envVars:
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: COOKIE_SECURE
+        value: "1"
+      - key: PAYMENT_MODE
+        value: test
+      - key: PAYMENT_PROVIDER
+        value: sandbox
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: INTEGRATION_ENCRYPTION_KEY
+        sync: false
+    disk:
+      name: admarket-data
+      mountPath: /srv/app/data
+      sizeGB: 1

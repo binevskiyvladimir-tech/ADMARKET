@@ -1,0 +1,24 @@
+{% extends "base.html" %}{% block title %}Интеграции рекламных платформ — ADMARKET{% endblock %}{% block content %}
+<section class="section planner-page">
+ <div class="page-heading"><div class="eyebrow">AD PLATFORM CONNECTOR / V2.5</div><h1>Интеграции <span>рекламных платформ.</span></h1><p class="lead">Единый центр подключений. Авторизация и синхронизация разделены: наличие токена ещё не означает, что API выдал приложению доступ.</p></div>
+ {% if request.query_params.get('connected') %}<div class="notice">Яндекс OAuth завершён. Токен сохранён в зашифрованном виде. Доступ к API и синхронизация пока не подтверждены.</div>{% endif %}
+ {% if request.query_params.get('disconnected') %}<div class="notice">Подключение удалено из ADMARKET.</div>{% endif %}
+ <div class="campaign-list integration-list">
+  <article class="campaign-card integration-card" id="yandex-direct"><div class="campaign-card-top"><div><small>SEARCH / PERFORMANCE</small><h3>Яндекс Директ</h3></div><span class="campaign-status {% if yandex_ready %}status-active{% else %}status-paused{% endif %}">{% if yandex_ready %}OAuth настроен{% else %}Требует настройки{% endif %}</span></div>
+   <p class="campaign-objective">OAuth 2.0 · API v5 · статистика кампаний доступна через официальные методы API после регистрации приложения и получения допуска.</p>
+   <div class="campaign-meta"><span><small>Client ID</small><strong>{% if yandex_ready %}Настроен{% else %}Не задан{% endif %}</strong></span><span><small>Шифрование токенов</small><strong>{% if yandex_ready %}Настроено{% else %}Не настроено{% endif %}</strong></span></div>
+   {% if yandex_ready %}<form method="post" action="/integrations/yandex-direct/connect"><input type="hidden" name="csrf" value="{{csrf}}"><button class="button">Подключить аккаунт через OAuth ↗</button></form>{% else %}<p class="muted-note">Для включения задай YANDEX_DIRECT_CLIENT_ID, YANDEX_DIRECT_CLIENT_SECRET, INTEGRATION_ENCRYPTION_KEY и HTTPS callback URI в .env. Redirect URI в Яндекс OAuth должен совпадать с серверным.</p>{% endif %}
+   <p class="muted-note">Callback: <code>{{redirect_uri}}</code></p>
+  </article>
+  <article class="campaign-card integration-card" id="vk-ads"><div class="campaign-card-top"><div><small>SOCIAL / DISPLAY</small><h3>VK Реклама</h3></div><span class="campaign-status status-paused">В разработке</span></div>
+   <p class="campaign-objective">Карточка провайдера подготовлена, но OAuth и методы синхронизации не включены. Не подключаем неизвестный или неподтверждённый flow к реальным рекламным кабинетам.</p>
+   <div class="campaign-meta"><span><small>OAuth</small><strong>Не активирован</strong></span><span><small>Автосинхронизация</small><strong>Отключена</strong></span></div>
+   <p class="muted-note">Включение — после проверки официальной документации, условий выдачи API-доступа и безопасного сценария токенов.</p>
+  </article>
+ </div>
+ <section class="saved-plans"><div class="campaign-heading"><div><span class="panel-kicker">CONNECTED ACCOUNTS</span><h2>Подключённые аккаунты</h2></div><span class="campaign-count">{{connections|length}} записей</span></div>
+ {% if connections %}{% for c in connections %}<article class="campaign-card"><div class="campaign-card-top"><div><small>CONNECTION #{{c.id}}</small><h3>{% if c.provider=='yandex_direct' %}Яндекс Директ{% else %}{{c.provider}}{% endif %}</h3></div><span class="campaign-status status-paused">{% if c.status=='authorized_pending_access' %}OAuth подтверждён · API не проверен{% else %}{{c.status}}{% endif %}</span></div><p class="muted-note">Токен хранится зашифрованным. Для полного отзыва разрешения отзови приложение в настройках Яндекс ID. Последняя синхронизация: {% if c.last_sync_at %}{{c.last_sync_at}}{% else %}не выполнялась{% endif %}.</p><form method="post" action="/integrations/{{c.id}}/disconnect"><input type="hidden" name="csrf" value="{{csrf}}"><button class="small-button">Удалить токен из ADMARKET</button></form></article>{% endfor %}{% else %}<div class="campaign-empty"><strong>Пока нет подключённых аккаунтов</strong><p>Сначала настрой OAuth-приложение провайдера, затем подключи рекламный кабинет.</p></div>{% endif %}
+ </section>
+ <aside class="planner-side integration-notice"><span class="panel-kicker">SECURITY / SCOPE</span><h2>Что умеет v2.5</h2><p>Сохраняет OAuth-токен Яндекс Директа только в зашифрованном виде, привязывает подключение к аккаунту рекламодателя и защищает OAuth state от подмены и повторного использования.</p><p>Автоматический импорт статистики, управление ставками и запуск рекламы не включены. Подключение не создаёт кампании и не списывает деньги.</p></aside>
+ <p><a href="/dashboard">← Вернуться в кабинет</a></p>
+</section>{% endblock %}

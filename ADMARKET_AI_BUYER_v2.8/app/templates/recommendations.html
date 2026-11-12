@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Подбор — ADMARKET{% endblock %}
+{% block content %}
+<section class="section results">
+ <a class="back" href="/">← На главную</a><div class="eyebrow">РЕЗУЛЬТАТ ПОДБОРА</div>
+ <h1>Подходящие<br><span>площадки.</span></h1>
+ <p class="lead">Запрос: {{goal}} · География: {{geo}} · Бюджет: {{ "{:,}".format(budget).replace(",", " ") }} ₽</p>
+ {% if items %}
+ <div class="cards">
+ {% for x in items %}
+ <article class="card"><div class="card-top"><span class="tag">{{x.channel}}</span><span class="demo">DEMO</span></div><h3>{{x.name}}</h3><p class="muted">{{x.topic}} · {{x.geo}}</p><div class="stats"><div><strong>{{"{:,}".format(x.audience).replace(",", " ")}}</strong><small>аудитория</small></div><div><strong>{{"{:,}".format(x.price).replace(",", " ")}} ₽</strong><small>тестовая цена</small></div></div><div class="formats">{{x.formats}}</div><p class="disclaimer">{{x.notes}}</p></article>
+ {% endfor %}
+ </div>
+ <div class="notice">Подбор выполнен по ключевым словам, географии и бюджету. Это не прогноз охвата и не подтверждение доступности рекламного места. Чтобы отправить заявку, войди как рекламодатель.</div>
+ {% if user and user.role == 'advertiser' %}
+ <form class="matcher order-form" action="/orders" method="post">
+  <input type="hidden" name="csrf" value="{{csrf}}">
+  <h2>Оставить заявку на подбор</h2>
+  <input type="hidden" name="goal" value="{{goal}}"><input type="hidden" name="geo" value="{{geo}}"><input type="hidden" name="budget" value="{{budget}}">
+  <input type="hidden" name="selected" value="{{ items|map(attribute='name')|join('; ') }}">
+  <label>Компания / проект<input name="company" required placeholder="Название проекта"></label>
+  <label>Контакт для связи<input name="contact" required placeholder="Телефон, email или ссылка на мессенджер"></label>
+  <button class="button" type="submit">Отправить заявку <b>→</b></button>
+ </form>
+ {% elif not user %}<div class="notice">Чтобы отправить заявку, <a href="/login">войдите</a> или <a href="/register">создайте аккаунт рекламодателя</a>.</div>
+ {% else %}<div class="notice">Отправлять рекламные заявки может аккаунт с ролью «Рекламодатель».</div>{% endif %}
+ {% else %}<div class="notice">Не нашлось площадок в рамках бюджета. Попробуй увеличить бюджет или изменить географию.</div>{% endif %}
+</section>
+{% endblock %}

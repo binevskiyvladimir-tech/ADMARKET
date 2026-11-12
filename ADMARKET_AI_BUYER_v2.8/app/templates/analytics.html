@@ -1,0 +1,18 @@
+{% extends "base.html" %}{% block title %}Аналитика — ADMARKET{% endblock %}{% block content %}
+<section class="section workspace-page">
+ <div class="page-heading"><div><div class="eyebrow">INSIGHTS / PERFORMANCE</div><h1>Цифры под <span>контролем.</span></h1><p class="lead">Сводка по заявкам, размещениям и тестовым операциям в рамках доступной роли.</p></div><a class="button button-secondary" href="/dashboard">← В кабинет</a></div>
+ <div class="kpi-grid">
+  <article class="kpi-card"><span class="kpi-label">Заявки / отклики</span><strong>{{requests_count}}</strong><span class="kpi-foot">Всего в системе</span></article>
+  <article class="kpi-card"><span class="kpi-label">Размещения</span><strong>{{total}}</strong><span class="kpi-foot">Созданные сделки</span></article>
+  <article class="kpi-card"><span class="kpi-label">Завершено</span><strong>{{completed}}</strong><span class="kpi-foot">Закрытые размещения</span></article>
+  <article class="kpi-card"><span class="kpi-label">Средняя оценка</span><strong>{{avg_rating if avg_rating is not none else '—'}}<small>{% if avg_rating is not none %}/ 5{% endif %}</small></strong><span class="kpi-foot">По опубликованным отзывам</span></article>
+ </div>
+ <div class="analytics-grid">
+  <article class="surface-panel"><div class="panel-heading"><div><span class="panel-kicker">PAYMENT FLOW</span><h2>Тестовый денежный поток</h2></div><span class="sandbox-pill">SANDBOX</span></div><div class="finance-pair"><div><span>Тестовые оплаты</span><strong>{{"{:,}".format(paid).replace(","," ")}} ₽</strong></div><div><span>В тестовом эскроу</span><strong>{{"{:,}".format(held).replace(","," ")}} ₽</strong></div></div><p class="muted">Эти значения отражают только тестовые проводки. Они не являются фактической выручкой, рекламным бюджетом или доступными к выводу средствами.</p></article>
+  <article class="surface-panel insight-panel"><span class="panel-kicker">WORKFLOW</span><h2>Контроль кампаний</h2><div class="workflow-step"><b>01</b><span><strong>Заявка</strong><small>Фиксация цели, бюджета и географии</small></span></div><div class="workflow-step"><b>02</b><span><strong>Согласование</strong><small>Условия и коммуникация сторон</small></span></div><div class="workflow-step"><b>03</b><span><strong>Размещение</strong><small>Подтверждение публикации и результата</small></span></div></article>
+ </div>
+ <div class="surface-panel table-panel"><div class="panel-heading"><div><span class="panel-kicker">CAMPAIGN REGISTER</span><h2>Размещения</h2></div><span class="count-chip">{{rows|length}} записей</span></div>
+ {% if rows %}<div class="table-wrap"><table><thead><tr><th>ID</th><th>Кампания</th><th>Гео</th><th>Статус</th><th>Цена условий</th><th>Sandbox-платёж</th><th>Эскроу</th></tr></thead><tbody>{% for r in rows %}<tr><td class="mono">#{{r.id}}</td><td><strong>{{r.title}}</strong></td><td>{{r.geo}}</td><td><span class="status-chip">{{r.status}}</span></td><td>{{r.price or '—'}} ₽</td><td>{{r.paid_amount or '—'}}{% if r.paid_amount %} ₽{% endif %}</td><td>{{r.escrow_status or '—'}}</td></tr>{% endfor %}</tbody></table></div>{% else %}<div class="empty-state"><span class="empty-icon">↗</span><strong>Пока нет размещений</strong><p>Когда появятся первые сделки, здесь будет их сводка.</p><a href="/dashboard">Перейти к рабочему пространству →</a></div>{% endif %}
+ </div>
+ <p class="disclaimer analytics-disclaimer">Важно: рекламная эффективность, охваты и ROI не рассчитываются без подтверждённых фактических данных кампаний.</p>
+</section>{% endblock %}
