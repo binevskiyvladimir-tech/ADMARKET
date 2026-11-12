@@ -1,6 +1,8 @@
+
 services:
   - type: web
     name: admarket-ai-media-buyer
+    rootDir: ADMARKET_AI_BUYER_v2.8
     runtime: docker
     plan: starter
     region: frankfurt
@@ -27,3 +29,4 @@ services:
       name: admarket-data
       mountPath: /srv/app/data
       sizeGB: 1
+      
