@@ -4,7 +4,7 @@ services:
     name: admarket-ai-media-buyer
     rootDir: ADMARKET_AI_BUYER_v2.8
     runtime: docker
-    plan: starter
+    plan: free
     region: frankfurt
     dockerfilePath: ./Dockerfile
     healthCheckPath: /
@@ -25,8 +25,3 @@ services:
         sync: false
       - key: INTEGRATION_ENCRYPTION_KEY
         sync: false
-    disk:
-      name: admarket-data
-      mountPath: /srv/app/data
-      sizeGB: 1
-      
