@@ -319,8 +319,8 @@ def page(request: Request, template: str, **context):
     if user:
         with connect() as con:
             notifications = con.execute("SELECT * FROM notifications WHERE user_id=? ORDER BY id DESC LIMIT 12", (user["id"],)).fetchall()
-    return templates.TemplateResponse(template, {"request": request, "user": user,
-        "csrf": csrf_token(request), "notifications": notifications, **context})
+    return templates.TemplateResponse(request=request, name=template, context={"request": request, "user": user,
+    "csrf": csrf_token(request), "notifications": notifications, **context})
 
 def notify(con, user_id: int, kind: str, title: str, body: str = "", target_url: str = "/dashboard", placement_id=None, actor_id=None):
     con.execute("INSERT INTO notifications(user_id,kind,title,body,target_url) VALUES(?,?,?,?,?)",
